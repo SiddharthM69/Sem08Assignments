@@ -3,6 +3,7 @@ import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
 import plotly.express as px
+import plotly.graph_objects as go
 from googleapiclient.discovery import build
 from textblob import TextBlob
 import re
@@ -99,19 +100,22 @@ app = dash.Dash(__name__)
 
 # Define layout
 app.layout = html.Div([
-    html.H1("YouTube Data Visualization Dashboard for Apna College"),
+    html.H1("YouTube Data Visualization Dashboard For Apna College"),
     dcc.Graph(id='sentiment-graph for 20 latest videos'),
-    dcc.Graph(id='views-comments-graph for 20 latest videos')
+    dcc.Graph(id='views-comments-graph for 20 latest videos'),
+    dcc.Graph(id='total-views-bar for 20 latest videos'),
+    dcc.Graph(id='comments-length-hist for 20 latest videos')
 ])
 
 # Define callbacks
 @app.callback(
-    [Output('sentiment-graph', 'figure'),
-     Output('views-comments-graph', 'figure')],
-    [Input('sentiment-graph', 'id'),
-     Input('views-comments-graph', 'id')]
+    [Output('sentiment-graph for 20 latest videos', 'figure'),
+     Output('views-comments-graph for 20 latest videos', 'figure'),
+     Output('total-views-bar for 20 latest videos', 'figure'),
+     Output('comments-length-hist for 20 latest videos', 'figure')],
+    [Input('sentiment-graph for 20 latest videos', 'id')]
 )
-def update_graphs(sentiment_id, views_comments_id):
+def update_graphs(sentiment_id):
     # Sentiment analysis scatter plot
     sentiment_fig = px.scatter(df, x='Views', y='Sentiment', hover_data=['Title'],
                                title='Sentiment Analysis of Video Comments')
@@ -120,7 +124,14 @@ def update_graphs(sentiment_id, views_comments_id):
     views_comments_fig = px.scatter(df, x='Views', y=df['Comments'].apply(len),
                                     hover_data=['Title'], title='Views vs Comments on Videos')
     
-    return sentiment_fig, views_comments_fig
+    # Total views bar chart
+    total_views_fig = px.bar(df, x='Title', y='Views', title='Total Views for Each Video')
+    
+    # Comments length histogram
+    comments_length_fig = px.histogram(df, x=df['Comments'].apply(lambda x: len(' '.join(x))),
+                                       title='Distribution of Comments Length')
+    
+    return sentiment_fig, views_comments_fig, total_views_fig, comments_length_fig
 
 # Run the app
 if __name__ == '__main__':
