@@ -10,7 +10,7 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 import matplotlib.pyplot as plt
 import pandas as pd
 
-api_key = "AIzaSyBP29jlFl-NOJiGyK8O5FsOnIt6IGTFFwU"
+api_key = "Your API Key"
 video_id = "KGQSTDm5ois"
 max_results = 100
 youtube = googleapiclient.discovery.build("youtube", "v3", developerKey=api_key)
